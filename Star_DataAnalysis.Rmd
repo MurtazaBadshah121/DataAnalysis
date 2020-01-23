@@ -1,0 +1,149 @@
+---
+title: "Stars_dataset"
+author: "Murtaza Badshah"
+date: "1/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import the libraries to start the Data Analysis.
+
+```{r}
+library(tidyverse)
+library(dslabs)
+data(stars)
+options(digits = 3)   # report 3 significant digits
+```
+
+## Loading the Stars dataset from the dslabs package and assinging it to a data frame.
+```{r}
+stars <- as.data.frame(stars)
+```
+
+### Mean & Standard Deviation of magnitude in the dataset.
+
+```{r}
+mean(stars$magnitude)
+sd(stars$magnitude)
+```
+
+### Desity plot measuring the Magnitude in the Dataset.
+```{r}
+stars%>%
+  ggplot(aes(magnitude))+
+  geom_density()
+```
+
+### Desnity plot of the temperature to measure the heat density of the stars in the dataset.
+
+```{r}
+stars%>%
+  ggplot(aes(temp))+
+  geom_density()
+```
+
+### Scatter plot of the data with temperature on the x-axis and magnitude on the y-axis to examine the relationship between the variables. As we can see that there is a decreasing exponential trend in the line.
+
+```{r}
+stars%>%
+  ggplot(aes(temp, magnitude))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+### In order to interpret the graph better we are going to flip the axis to get a better understanding of the data.
+
+
+```{r}
+stars%>%
+  ggplot(aes(temp, magnitude))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  scale_x_continuous(trans='log10')+
+  scale_y_reverse()+
+  scale_x_reverse()
+  
+```
+
+> Here we are able to see that the brighter and hotter stars lie on the upper left side of the graph and the main sequence stars lie on the upper left center side almost close to the linear regression line.
+
+### Generally stars with hotter temperatures with higher Magnitude or lower luminosity are considered to be White Dwarfs we can outline them in the above graph as such.
+
+```{r}
+wdwarf<- stars%>%
+  filter(magnitude > 10 & temp > 9000)
+
+stars%>%
+  ggplot(aes(x = stars$temp, y = stars$magnitude))+
+  geom_point(alpha = 0.2)+
+  geom_point(data = wdwarf, aes(x = temp, 
+                                y = magnitude, 
+                                color = "red",))+
+  geom_smooth(method = "lm", 
+              se = FALSE)+
+  scale_x_continuous(trans='log10')+
+  scale_y_reverse()+
+  scale_x_reverse()
+  
+```
+
+> As we observe there are only 4 white dwarfs within the dataset. They have higher temperature and lower magnitudes.
+
+### In order to find the Red giant stars within the data set we will need to filter down the data a bit more. A hot giant usually has a lower Magnitude as well as a higher temperature.
+
+```{r}
+rgiant<- stars%>%
+  filter(magnitude < 0 & temp < 10000)
+
+stars%>%
+  ggplot(aes(x = stars$temp, y = stars$magnitude))+
+  geom_point(alpha = 0.2)+
+  geom_point(data = rgiant, aes(x = temp, 
+                                y = magnitude, 
+                                color = "red",))+
+  geom_smooth(method = "lm", 
+              se = FALSE)+
+  scale_x_continuous(trans='log10')+
+  scale_y_reverse()+
+  scale_x_reverse()
+```
+
+### Add labeling to the graph to identify the stars.
+
+```{r fig.height=15, fig.width=12}
+
+stars%>%
+  ggplot(aes(x = log10(temp), y = magnitude))+
+  geom_point()+
+  geom_label(aes(label = star, 
+                 color = "white", 
+                 ))+
+  scale_y_reverse()+
+  scale_x_reverse()
+```
+
+1. The least lumninous star in the sample with a surface temperature over 5000K.
+
+> Based on the output we can pin point that the lowest magnitude with the highest temperature would be the **vanMaanen's Star**.
+
+2. The two stars with lowest temperature and highest luminosity are known as supergiants.
+
+> The two stars are Beetlejuice & Antares
+
+### View the same data points without the label and colored by the type of star.
+
+```{r}
+stars%>%
+  ggplot(aes(log10(temp),magnitude, color = type))+
+  geom_point()+
+  scale_y_reverse()+
+  scale_x_reverse()
+```
+
+1. M type stars have the lowest temeprature. 
+
+2. O type stars have a high temperature.
+
