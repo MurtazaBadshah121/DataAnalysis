@@ -2,8 +2,12 @@ name: "Murtaza Badshah"
 navbar:
   title: "My Research"
   left:
-    - text: "Stars Analysis"
+    - text: "Stars Dataset"
       href: Star_DataAnalysis.html
+    - text: "Diamonds Dataset"
+      href: about.html
+    - text: "Cars93 Dataset"
+      href: about.html
     - text: "Titanic Analysis"
       href: about.html
 output:
